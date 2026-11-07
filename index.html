@@ -68,18 +68,6 @@
       transform: none;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .reveal {
-        opacity: 1;
-        transform: none;
-        transition: none;
-      }
-      .hero > * { animation: none !important; opacity: 1 !important; }
-      /* kill the looping chevron pulse too (grafted from the minimalist candidate) */
-      .scroll-cue::after { animation: none !important; }
-    }
-
     .eyebrow {
       font-size: 0.74rem;
       letter-spacing: 0.42em;
@@ -148,7 +136,12 @@
       animation: hero-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    .hero .leaf-mark       { animation-delay: 0.15s; }
+    /* rise in, then drift gently like a flower on a breeze */
+    .hero .leaf-mark {
+      animation:
+        hero-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards,
+        leaf-sway 7s ease-in-out 1.4s infinite;
+    }
     .hero .eyebrow         { animation-delay: 0.35s; }
     .hero .couple          { animation-delay: 0.55s; }
     .hero .invite-line     { animation-delay: 0.7s; }
@@ -522,7 +515,9 @@
       bottom: 0;
       left: 50%;
       width: 1px;
-      transform: translateX(-50%);
+      /* --tl-progress is driven by scroll in the script; without JS the spine is fully drawn */
+      transform: translateX(-50%) scaleY(var(--tl-progress, 1));
+      transform-origin: top;
       background: linear-gradient(180deg, transparent, var(--gold-soft) 4%, var(--gold-soft) 96%, transparent);
     }
 
@@ -734,6 +729,189 @@
       color: var(--rose-ink);
     }
 
+    /* ---------- Motion ---------- */
+
+    @keyframes leaf-sway {
+      0%, 100% { transform: none; }
+      25%      { transform: translateY(-3px) rotate(-6deg); }
+      75%      { transform: translateY(2px) rotate(6deg); }
+    }
+
+    /* Names come into focus rather than just fading up */
+    @keyframes names-in {
+      from { opacity: 0; transform: translateY(22px); filter: blur(10px); }
+      to   { opacity: 1; transform: none; filter: none; }
+    }
+
+    .hero .couple { animation-name: names-in; animation-duration: 1.6s; }
+
+    /* Occasional gold glint across the ampersand */
+    .couple .amp {
+      padding: 0.12em 0;
+      margin: -0.18em 0;
+      background: linear-gradient(110deg, var(--gold) 42%, #f7e9c6 50%, var(--gold) 58%);
+      background-size: 300% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+      animation: amp-glint 6s ease-in-out 2.2s infinite;
+    }
+
+    @keyframes amp-glint {
+      0%        { background-position: 100% 0; }
+      35%, 100% { background-position: 0% 0; }
+    }
+
+    /* Gold motes twinkle */
+    .hero::after { animation: motes-twinkle 4.5s ease-in-out infinite alternate; }
+
+    @keyframes motes-twinkle {
+      from { opacity: 0.4; }
+      to   { opacity: 1; }
+    }
+
+    /* Falling petals (spans are created by the script) */
+    .hero > .petals {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .petal {
+      position: absolute;
+      top: -24px;
+      left: var(--x);
+      width: var(--size);
+      height: calc(var(--size) * 1.2);
+      animation: petal-fall var(--dur) linear var(--delay) infinite;
+    }
+
+    /* Petal art: deeper blush at the rounded tip, fading pale toward the pointed base */
+    .petal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23e6a9a0'/%3E%3Cstop offset='.55' stop-color='%23f4d0c9'/%3E%3Cstop offset='1' stop-color='%23fff6f3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M10 24C4 20 1 13 2 7 3 2 7 0 10 0s7 2 8 7c1 6-2 13-8 17Z'/%3E%3C/svg%3E");
+      opacity: var(--o);
+      animation: petal-sway var(--sway) ease-in-out infinite alternate;
+    }
+
+    /* Cherry-blossom variant with the little notch at its tip */
+    .petal.blossom::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23eab3ab'/%3E%3Cstop offset='.5' stop-color='%23f7dcd6'/%3E%3Cstop offset='1' stop-color='%23fffaf8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M10 24C3 18 0 11 2 5c1-3 4-5 6-3l2 2.5L12 2c2-2 5 0 6 3 2 6-1 13-8 19Z'/%3E%3C/svg%3E");
+    }
+
+    @keyframes petal-fall {
+      0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+      8%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translate3d(var(--drift), calc(100vh + 48px), 0) rotate(var(--spin)); opacity: 0; }
+    }
+
+    @keyframes petal-sway {
+      from { transform: translateX(-14px) rotateY(0deg); }
+      to   { transform: translateX(14px) rotateY(45deg); }
+    }
+
+    /* Card's gold corners draw themselves in after the card lands */
+    .invitation-card::before,
+    .invitation-card::after {
+      animation: corner-draw 1s cubic-bezier(0.22, 1, 0.36, 1) 1.7s both;
+    }
+
+    @keyframes corner-draw {
+      from { width: 0; height: 0; opacity: 0; }
+    }
+
+    /* Section dividers: hairline grows outward, ornament turns into place */
+    .reveal .divider {
+      background-size: 0% 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      transition: background-size 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
+    }
+
+    .reveal.is-visible .divider { background-size: 100% 100%; }
+
+    .reveal .divider::before {
+      opacity: 0;
+      transform: translate(-50%, -50%) rotate(-120deg) scale(0.5);
+      transition:
+        opacity 0.8s ease 0.6s,
+        transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s;
+    }
+
+    .reveal.is-visible .divider::before {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Countdown cells arrive one after another */
+    .count-grid.reveal .count-cell {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+      transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .count-grid.reveal .count-cell:nth-child(2) { transition-delay: 0.1s; }
+    .count-grid.reveal .count-cell:nth-child(3) { transition-delay: 0.2s; }
+    .count-grid.reveal .count-cell:nth-child(4) { transition-delay: 0.3s; }
+
+    .count-grid.is-visible .count-cell { opacity: 1; transform: none; }
+
+    /* A number drops in each time it changes */
+    .count-num.tick { animation: num-tick 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+
+    @keyframes num-tick {
+      from { opacity: 0.15; transform: translateY(-28%); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* Timeline: medallion pops, text slides in from its side */
+    .tl-item.reveal { transform: none; }
+
+    /* entries waiting to slide in sit offset past the edge; don't let them widen the page */
+    .program { overflow-x: clip; }
+
+    .tl-item.reveal .tl-icon {
+      opacity: 0;
+      transform: scale(0.55) rotate(-12deg);
+      transition:
+        opacity 0.7s ease 0.1s,
+        transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+    }
+
+    .tl-item.reveal .tl-body {
+      opacity: 0;
+      transform: translateX(-28px);
+      transition:
+        opacity 0.8s ease 0.3s,
+        transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+    }
+
+    .tl-item.reveal:nth-child(even) .tl-body { transform: translateX(28px); }
+
+    .tl-item.reveal.is-visible .tl-icon,
+    .tl-item.reveal.is-visible .tl-body { opacity: 1; transform: none; }
+
+    /* Gallery: photos settle from a slight zoom as they appear */
+    .photo.reveal img {
+      transform: scale(1.12);
+      transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .photo.reveal.is-visible img { transform: none; }
+
+    .photo.reveal.is-visible:hover img {
+      transform: scale(1.04);
+      transition-duration: 0.9s;
+    }
+
     @media (max-width: 720px) {
       .count-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
       .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 170px; grid-auto-flow: dense; }
@@ -746,6 +924,8 @@
       .tl-body,
       .tl-item:nth-child(even) .tl-body { grid-column: 2; text-align: left; }
       .tl-body .tl-time { margin-right: 0; }
+      /* every entry sits right of the spine on phones, so all slide in from the right */
+      .tl-item.reveal .tl-body { transform: translateX(28px); }
     }
 
     /* Small-phone refinement (grafted approach from the minimalist candidate) */
@@ -753,6 +933,29 @@
       .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: 210px; gap: 12px; }
       .photo.feature { grid-column: auto; grid-row: auto; }
       .invitation-card { padding: 22px 18px 20px; }
+    }
+
+    /* Last in the sheet so it overrides every motion rule above */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+      .hero > * { animation: none !important; opacity: 1 !important; }
+      .scroll-cue::after,
+      .hero::after,
+      .couple .amp,
+      .invitation-card::before,
+      .invitation-card::after,
+      .count-num.tick { animation: none !important; }
+      .reveal .divider,
+      .reveal .divider::before,
+      .count-grid.reveal .count-cell,
+      .tl-item.reveal .tl-icon,
+      .tl-item.reveal .tl-body,
+      .photo.reveal img { transition: none !important; }
     }
   </style>
 </head>
@@ -1010,6 +1213,51 @@
       reveals.forEach((el) => observer.observe(el));
     }
 
+    function addPetals(hero, count) {
+      const layer = document.createElement("div");
+      layer.className = "petals";
+      layer.setAttribute("aria-hidden", "true");
+      const rand = (min, max) => min + Math.random() * (max - min);
+      for (let i = 0; i < count; i++) {
+        const petal = document.createElement("span");
+        petal.className = Math.random() < 0.6 ? "petal blossom" : "petal";
+        const dur = rand(10, 18);
+        petal.style.setProperty("--x", rand(0, 100) + "%");
+        petal.style.setProperty("--size", rand(14, 24) + "px");
+        petal.style.setProperty("--dur", dur + "s");
+        petal.style.setProperty("--delay", -rand(0, dur) + "s");
+        petal.style.setProperty("--drift", rand(-14, 14) + "vw");
+        petal.style.setProperty("--spin", rand(180, 540) + "deg");
+        petal.style.setProperty("--sway", rand(2.4, 4.4) + "s");
+        petal.style.setProperty("--o", rand(0.45, 0.85).toFixed(2));
+        layer.appendChild(petal);
+      }
+      hero.prepend(layer);
+    }
+
+    function syncSpineOnScroll(timeline) {
+      let queued = false;
+      const update = () => {
+        queued = false;
+        const rect = timeline.getBoundingClientRect();
+        const progress = (window.innerHeight * 0.75 - rect.top) / rect.height;
+        timeline.style.setProperty("--tl-progress", Math.min(1, Math.max(0, progress)).toFixed(4));
+      };
+      const queue = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(update);
+      };
+      window.addEventListener("scroll", queue, { passive: true });
+      window.addEventListener("resize", queue);
+      update();
+    }
+
+    if (!reduceMotion) {
+      addPetals(document.querySelector(".hero"), window.innerWidth < 720 ? 10 : 18);
+      syncSpineOnScroll(document.querySelector(".timeline"));
+    }
+
     const countdown = document.getElementById("countdown");
     const target = new Date(countdown.dataset.target).getTime();
     const cells = {
@@ -1020,6 +1268,15 @@
     };
     const pad = (n) => String(n).padStart(2, "0");
 
+    // Only touch a cell when its value changes, replaying the drop-in animation.
+    function setCountValue(el, value) {
+      if (el.textContent === value) return;
+      el.textContent = value;
+      el.classList.remove("tick");
+      void el.offsetWidth; // restart the CSS animation
+      el.classList.add("tick");
+    }
+
     function tick() {
       const remaining = target - Date.now();
       if (remaining <= 0) {
@@ -1027,10 +1284,10 @@
         return false;
       }
       const s = Math.floor(remaining / 1000);
-      cells.days.textContent    = Math.floor(s / 86400);
-      cells.hours.textContent   = pad(Math.floor((s % 86400) / 3600));
-      cells.minutes.textContent = pad(Math.floor((s % 3600) / 60));
-      cells.seconds.textContent = pad(s % 60);
+      setCountValue(cells.days,    String(Math.floor(s / 86400)));
+      setCountValue(cells.hours,   pad(Math.floor((s % 86400) / 3600)));
+      setCountValue(cells.minutes, pad(Math.floor((s % 3600) / 60)));
+      setCountValue(cells.seconds, pad(s % 60));
       return true;
     }
 
