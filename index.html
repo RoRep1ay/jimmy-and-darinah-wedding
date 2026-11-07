@@ -583,7 +583,8 @@
       text-wrap: pretty;
     }
 
-    .program .scroll-cue { margin-top: 56px; }
+    .program .scroll-cue,
+    .gallery .scroll-cue { margin-top: 56px; }
 
     /* Gallery */
     .gallery-grid {
@@ -655,6 +656,66 @@
       color: var(--ivory);
     }
 
+    /* Thank-you note — stays ivory behind the heading (so the divider ornament's
+       ivory backing blends), then fades into the footer's champagne */
+    .thanks {
+      text-align: center;
+      background: linear-gradient(180deg, var(--ivory) 0%, var(--ivory) 35%, var(--champagne) 100%);
+    }
+
+    .thanks-note {
+      position: relative;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: clamp(32px, 6vw, 48px) clamp(22px, 6vw, 52px);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(251, 245, 238, 0.6));
+      border: 1px solid var(--gold-soft);
+      border-radius: 4px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+        0 18px 50px rgba(143, 86, 80, 0.12);
+    }
+
+    /* Same gold corner hairlines as the invitation card */
+    .thanks-note::before,
+    .thanks-note::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: var(--gold);
+      border-style: solid;
+    }
+
+    .thanks-note::before { top: 9px; left: 9px; border-width: 1px 0 0 1px; }
+    .thanks-note::after  { bottom: 9px; right: 9px; border-width: 0 1px 1px 0; }
+
+    .thanks-note p {
+      font-size: 1.08rem;
+      line-height: 1.8;
+      color: var(--ink);
+      text-wrap: pretty;
+    }
+
+    .thanks-note p + p { margin-top: 16px; }
+
+    .thanks-note .thanks-lead {
+      font-style: italic;
+      font-size: 1.18rem;
+      color: var(--ink-deep);
+    }
+
+    .thanks-note .thanks-sign {
+      margin-top: 30px;
+      font-style: italic;
+    }
+
+    .thanks-sign .script {
+      display: block;
+      margin-top: 10px;
+      font-size: clamp(2.2rem, 7vw, 2.9rem);
+      color: var(--rose-ink);
+    }
 
     /* Footer */
     footer {
@@ -1170,6 +1231,35 @@
             <figcaption class="caption">Lace on the lawn</figcaption>
           </figure>
         </div>
+
+        <button class="scroll-cue section-next reveal" type="button" aria-label="Scroll to our thank-you note"></button>
+      </div>
+    </section>
+
+    <section class="thanks">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="eyebrow">With love &amp; gratitude</p>
+          <h2>Thank You</h2>
+          <div class="divider"></div>
+        </div>
+
+        <div class="thanks-note reveal">
+          <p class="thanks-lead">To our families and friends, thank you for being part of our story.</p>
+          <p>
+            Your love, guidance, and support have carried us to this day. Whether you
+            celebrate with us in person or keep us in your thoughts from afar, your
+            blessings mean the world to us.
+          </p>
+          <p>
+            We are so grateful to share the beginning of our forever with you, and we
+            can&rsquo;t wait to celebrate together on 18 December.
+          </p>
+          <p class="thanks-sign">
+            With all our love,
+            <span class="script">Sojimmy &amp; Pichdarinah</span>
+          </p>
+        </div>
       </div>
     </section>
   </main>
@@ -1302,6 +1392,7 @@
       document.querySelector(".celebration"),
       document.querySelector(".program"),
       document.querySelector(".gallery"),
+      document.querySelector(".thanks"),
       document.querySelector("footer"),
     ];
 
