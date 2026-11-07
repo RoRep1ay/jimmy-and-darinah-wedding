@@ -505,6 +505,91 @@
       line-height: 1.1;
     }
 
+    /* Program — vertical timeline. Desktop: centred spine, entries alternate
+       sides. Phone (see media query): spine on the left, all entries to its right. */
+    .timeline {
+      --medallion: 78px;
+      list-style: none;
+      position: relative;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, transparent, var(--gold-soft) 4%, var(--gold-soft) 96%, transparent);
+    }
+
+    .tl-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr var(--medallion) 1fr;
+      column-gap: 28px;
+      align-items: center;
+    }
+
+    .tl-item + .tl-item { margin-top: 26px; }
+
+    .tl-icon {
+      grid-column: 2;
+      grid-row: 1;
+      width: var(--medallion);
+      height: var(--medallion);
+      border-radius: 50%;
+      border: 1px solid var(--gold-soft);
+      background: var(--ivory);
+      box-shadow: 0 0 0 6px var(--ivory), 0 10px 26px rgba(143, 86, 80, 0.12);
+      display: grid;
+      place-items: center;
+    }
+
+    .tl-icon img { width: 70%; height: 70%; object-fit: contain; }
+    /* the sword-and-hands drawing is very wide and short; let it fill more of the circle */
+    .tl-icon img.wide { width: 88%; height: 88%; }
+
+    .tl-body { grid-row: 1; grid-column: 1; text-align: right; }
+    /* cancel trailing letter-spacing so right-aligned times line up with the title edge */
+    .tl-body .tl-time { margin-right: -0.3em; }
+    .tl-item:nth-child(even) .tl-body .tl-time { margin-right: 0; }
+    .tl-item:nth-child(even) .tl-body { grid-column: 3; text-align: left; }
+
+    .tl-time {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--rose);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tl-title {
+      font-family: var(--body);
+      font-weight: 500;
+      font-size: clamp(1.15rem, 3vw, 1.35rem);
+      line-height: 1.3;
+      color: var(--ink-deep);
+      margin-top: 4px;
+      text-wrap: balance;
+    }
+
+    .tl-note {
+      margin-top: 4px;
+      font-style: italic;
+      font-size: 0.98rem;
+      line-height: 1.55;
+      color: var(--ink);
+      text-wrap: pretty;
+    }
+
+    .program .scroll-cue { margin-top: 56px; }
+
     /* Gallery */
     .gallery-grid {
       display: grid;
@@ -653,6 +738,14 @@
       .count-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
       .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 170px; grid-auto-flow: dense; }
       .invitation-card { padding: 24px 24px 22px; }
+
+      .timeline { --medallion: 62px; }
+      .timeline::before { left: calc(var(--medallion) / 2); }
+      .tl-item { grid-template-columns: var(--medallion) 1fr; column-gap: 20px; }
+      .tl-icon { grid-column: 1; }
+      .tl-body,
+      .tl-item:nth-child(even) .tl-body { grid-column: 2; text-align: left; }
+      .tl-body .tl-time { margin-right: 0; }
     }
 
     /* Small-phone refinement (grafted approach from the minimalist candidate) */
@@ -710,6 +803,97 @@
           <div class="count-cell"><span class="count-num" data-unit="minutes">--</span><span class="count-label">Minutes</span></div>
           <div class="count-cell"><span class="count-num" data-unit="seconds">--</span><span class="count-label">Seconds</span></div>
         </div>
+
+        <button class="scroll-cue section-next reveal" type="button" aria-label="Scroll to the wedding program"></button>
+      </div>
+    </section>
+
+    <section class="program">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="eyebrow">Friday &middot; 18 December 2026</p>
+          <h2>Our Wedding Day</h2>
+          <div class="divider"></div>
+        </div>
+
+        <ol class="timeline">
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/devata.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T06:00">6:00 AM</time>
+              <h3 class="tl-title">Blessing of the Guardian Spirits</h3>
+              <p class="tl-note">Sen Tevoda, an offering to the guardian spirits</p>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/krong-peali.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T06:15">6:15 AM</time>
+              <h3 class="tl-title">Krong Peali Ceremony</h3>
+              <p class="tl-note">An offering to the spirit of the land</p>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/gathering.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T06:40">6:40 AM</time>
+              <h3 class="tl-title">Gathering of Guests</h3>
+              <p class="tl-note">Preparing for the gift procession</p>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/procession.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T07:00">7:00 AM</time>
+              <h3 class="tl-title">Gift Procession</h3>
+              <p class="tl-note">The procession enters the wedding pavilion</p>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/rings.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T07:45">7:45 AM</time>
+              <h3 class="tl-title">Fruit Offering &amp; Ring Exchange</h3>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/monks.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T08:30">8:30 AM</time>
+              <h3 class="tl-title">Monks&rsquo; Blessing</h3>
+              <p class="tl-note">Buddhist chanting for good fortune</p>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/haircut.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T09:45">9:45 AM</time>
+              <h3 class="tl-title">Hair-Cutting Ceremony</h3>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img class="wide" src="icons/popil.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T10:45">10:45 AM</time>
+              <h3 class="tl-title">Popil &amp; Hand-Tying Ceremony</h3>
+              <p class="tl-note">Candle circling, the couple&rsquo;s bow, the hand-tying blessing, and Preah Thong holding Neang Neak&rsquo;s scarf</p>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/lunch.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T11:30">11:30 AM</time>
+              <h3 class="tl-title">Lunch with Our Guests</h3>
+            </div>
+          </li>
+          <li class="tl-item reveal">
+            <div class="tl-icon"><img src="icons/toast.png" width="160" height="160" loading="lazy" alt=""></div>
+            <div class="tl-body">
+              <time class="tl-time" datetime="2026-12-18T17:00">5:00 PM</time>
+              <h3 class="tl-title">Evening Reception &amp; Dinner</h3>
+            </div>
+          </li>
+        </ol>
 
         <button class="scroll-cue section-next reveal" type="button" aria-label="Scroll to the gallery"></button>
       </div>
@@ -859,6 +1043,7 @@
     const panels = [
       document.querySelector(".hero"),
       document.querySelector(".celebration"),
+      document.querySelector(".program"),
       document.querySelector(".gallery"),
       document.querySelector("footer"),
     ];
